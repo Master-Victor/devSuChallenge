@@ -1,30 +1,66 @@
 import { createSlice } from '@reduxjs/toolkit'
-
+import axios from 'axios';
 const initialState = {
-  value: 0,
+  list: {
+    data:[],
+    stateLoad: 'IDLE'
+  }
 }
 
 export const pokemonsSlice = createSlice({
-  name: 'counter',
+  name: 'pokemons',
   initialState,
   reducers: {
-    increment: (state) => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value += 1
+    getAllPokemons: (state, payload) => {
+      state.list.data = payload;
+      state.list.stateLoad = 'READY';
     },
-    decrement: (state) => {
-      state.value -= 1
+    setPokemon: (state, payload) => {
+      const json = (payload.payload);
+      axios.post('https://pokemon-pichincha.herokuapp.com/pokemons/?idAuthor=1', json, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    },  
+    updatepokemon: (state, payload) => {
+      // axios.put( 'https://pokemon-pichincha.herokuapp.com/pokemons/' + payload.payload.id, payload.payload )
+      axios.put( 'https://pokemon-pichincha.herokuapp.com/pokemons/8067', {
+        name: 'testUpdate',
+        image: 'testUpdate',
+        type: 'water',
+        hp: 100,
+        attack: 70,
+        defense: 80,
+        idAuthor: 1,
+      } )
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });      
     },
-    incrementByAmount: (state, action) => {
-      state.value += action.payload
-    },
+    deletePokemon: (state, payload) => {
+      axios.delete( 'https://pokemon-pichincha.herokuapp.com/pokemons/' + payload.payload )
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }  
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount } = pokemonsSlice.actions
+export const { getAllPokemons, setPokemon, deletePokemon, updatepokemon } = pokemonsSlice.actions
 
 export default pokemonsSlice.reducer

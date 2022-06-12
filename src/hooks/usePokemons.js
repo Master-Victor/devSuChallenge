@@ -1,16 +1,17 @@
-// import React, { useState, useEffect } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import axios from 'axios';
-// import { setPokemonsList } from '../redux/slices/pokemonsReducer';
-// export const usePokemons = () => {
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import axios from 'axios';
+import getAllPokemons from '../redux/slices/pokemonsSlice';
 
-//     const [ pokemons, setPokemons ] = useState([]);
-//     const dispatch = useDispatch();
+export const usePokemons = () => {
 
-//     useEffect(() => {
-//         axios.get('https://pokemon-pichincha.herokuapp.com/pokemons/?idAuthor=1')
-//             .then( (res) => dispatch( setPokemonsList(res) ) )
-//             .catch( (err) => dispatch( setPokemonsList(err) ) )
-//     }, [])
-//     return pokemons;
-// }
+    const dispatch = useDispatch();
+
+    useEffect( () => {
+        const fetchAllPokemons = async () => {
+            const res = await axios.get('https://pokemon-pichincha.herokuapp.com/pokemons/?idAuthor=1');
+            dispatch(getAllPokemons(res.data));
+        }
+        fetchAllPokemons().catch(console.error);;
+    }, [dispatch])
+}
