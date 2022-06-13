@@ -1,11 +1,23 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { deletePokemon, updatepokemon } from '../redux/slices/pokemonsSlice';
+import { deletePokemon, getAllPokemons } from '../redux/slices/pokemonsSlice';
 import { AiFillEdit, AiOutlineDelete } from "react-icons/ai";
 import "./style/container.css"
-const PokemonGroup = ({list}) => {
-
+import { Link } from 'react-router-dom';
+import axios from 'axios'
+const PokemonList = ({list}) => {
+    
     const dispatch = useDispatch();
+
+    const fetchAllPokemons = async () => {
+        const res = await axios.get('https://pokemon-pichincha.herokuapp.com/pokemons/?idAuthor=1');
+        dispatch( getAllPokemons(res.data) );
+    }
+
+    const handleDelete = (id) => {
+        dispatch( deletePokemon(id) )
+        setTimeout( () => fetchAllPokemons(), 1000);
+    }  
 
     return (
         <table>
@@ -21,13 +33,13 @@ const PokemonGroup = ({list}) => {
                     (list !== undefined) && list.map( pokemon => 
                         <tr key={ pokemon.id }>
                             <td>{ pokemon.name }</td>
-                            <td>{ 'imagen'/*pokemon.image*/ }</td>
+                            <td>{ <img src={pokemon.image} /> }</td>
                             <td>{ pokemon.attack }</td>
                             <td>{ pokemon.defense }</td>
                             <td className='icons' >
-                                <AiFillEdit size={25} color={'#0d6efd'} onClick={ () => dispatch( updatepokemon() ) }/>
+                                <Link to='new' state={pokemon} ><AiFillEdit size={25} color={'#0d6efd'}/></Link>
                                 &nbsp;&nbsp;&nbsp;
-                                <AiOutlineDelete size={25} color={'#0d6efd'} onClick={ () => dispatch( deletePokemon(pokemon.id) ) } />
+                                <AiOutlineDelete size={25} color={'#0d6efd'} onClick={ () => handleDelete(pokemon.id) } />
                             </td>
                         </tr>
                     )
@@ -37,4 +49,4 @@ const PokemonGroup = ({list}) => {
     )
 }
 
-export default PokemonGroup
+export default PokemonList
